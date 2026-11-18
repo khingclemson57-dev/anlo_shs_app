@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anlo SHS App</title>
+<style>
+body{font-family:Arial;margin:0;background:#f0f2f7}
+.top{background:#1e3a8a;color:white;padding:22px;text-align:center;border-bottom:4px solid #f59e0b}
+.card{background:white;margin:14px;padding:16px;border-radius:16px;box-shadow:0 3px 10px #ddd}
+.btn{background:#f59e0b;color:white;border:none;padding:13px;width:100%;border-radius:10px;font-size:16px;font-weight:bold}
+.btn2{background:#dbeafe;color:#1e3a8a;border:none;padding:10px 14px;border-radius:20px;margin:4px;font-weight:bold}
+.active{background:#1e3a8a!important;color:white!important}
+input,select{width:95%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:10px}
+.pill{background:#fff7e6;color:#b45309;padding:5px 10px;border-radius:20px;font-size:12px;float:right}
+#app{display:none}
+table{width:100%;border-collapse:collapse} td{padding:8px;border-bottom:1px solid #eee}
+</style>
+</head>
+<body>
+
+<div id="login" style="padding:16px">
+<div class="top" style="border-radius:18px"><h2>Anlo SHS App</h2><p>Anlo Senior High School • Ghana</p></div>
+<div class="card">
+<h3>Student Login</h3>
+<input id="name" placeholder="Full Name">
+<select id="sclass"><option>Form 1 Science</option><option>Form 1 General Arts</option><option>Form 1 Business</option><option>Form 2 Science</option><option>Form 2 General Arts</option><option>Form 2 Business</option><option>Form 3 Science</option><option>Form 3 General Arts</option><option>Form 3 Business</option></select>
+<input id="sid" placeholder="Student ID e.g. ANLO/1234">
+<input id="pass" type="password" placeholder="Password">
+<button class="btn" onclick="doLogin()">Login</button>
+<p style="font-size:13px;text-align:center;color:gray">Demo password: <b>anlo123</b></p>
+</div>
+</div>
+
+<div id="app">
+<div class="top"><h2>Anlo SHS App</h2><p id="welcome">Welcome</p><p id="classShow" style="font-size:13px;opacity:0.9"></p></div>
+<div style="text-align:center;padding:8px">
+<button class="btn2 active" onclick="show('home',this)">Home</button>
+<button class="btn2" onclick="show('time',this)">Timetable</button>
+<button class="btn2" onclick="show('assign',this)">Assignments</button>
+</div>
+
+<div id="home">
+<div class="card"><h3>📢 Announcements <span class="pill">Important</span></h3><p><b>Midterm exams</b><br>Starts 25th Nov • Prepare for all subjects</p><hr><p><b>PTA Meeting</b><br>30th Nov • 3pm • Assembly Hall</p></div>
+<div class="card"><h3>⚡ Quick Access</h3><p>Check your timetable and assignments above.</p></div>
+</div>
+
+<div id="time" style="display:none"><div class="card"><h3>📅 <span id="ttTitle">Timetable</span></h3><div id="ttBox"></div></div></div>
+
+<div id="assign" style="display:none"><div class="card"><h3>📝 Assignments</h3><div id="asBox"></div></div></div>
+
+<button class="btn" style="background:#64748b;width:90%;margin:15px" onclick="logout()">Logout</button>
+</div>
+
+<script>
+let timetables={
+"Science":"<table><tr><td>7:30</td><td>English</td></tr><tr><td>8:30</td><td>Maths</td></tr><tr><td>10:00</td><td>Physics</td></tr><tr><td>11:00</td><td>Chemistry</td></tr><tr><td>1:00</td><td>Biology</td></tr><tr><td>2:00</td><td>ICT</td></tr></table>",
+"General Arts":"<table><tr><td>7:30</td><td>English</td></tr><tr><td>8:30</td><td>Maths</td></tr><tr><td>10:00</td><td>Govt</td></tr><tr><td>11:00</td><td>Geography</td></tr><tr><td>1:00</td><td>Literature</td></tr><tr><td>2:00</td><td>CRS</td></tr></table>",
+"Business":"<table><tr><td>7:30</td><td>English</td></tr><tr><td>8:30</td><td>Maths</td></tr><tr><td>10:00</td><td>Accounting</td></tr><tr><td>11:00</td><td>Business Mgt</td></tr><tr><td>1:00</td><td>Economics</td></tr><tr><td>2:00</td><td>ICT</td></tr></table>"
+};
+let assigns={
+"Science":"<p><b>Physics</b> - Ch.3 Questions, Due Fri<br><b>Chemistry</b> - Practical notes, Due Mon<br><b>Maths</b> - Ex.5, Due Mon</p>",
+"General Arts":"<p><b>Govt</b> - Essay on Democracy, Due Fri<br><b>Geography</b> - Map work, Due Mon</p>",
+"Business":"<p><b>Accounting</b> - Trial Balance, Due Fri<br><b>Economics</b> - Demand & Supply, Due Mon</p>"
+};
+function doLogin(){
+let n=document.getElementById('name').value;
+let c=document.getElementById('sclass').value;
+let p=document.getElementById('pass').value;
+if(n==""){alert("Enter name");return}
+if(p!=="anlo123"){alert("Wrong password. Demo password is anlo123");return}
+localStorage.setItem("anlo_name",n); localStorage.setItem("anlo_class",c);
+openApp();
+}
+function openApp(){
+let n=localStorage.getItem("anlo_name"); if(!n)return;
+let c=localStorage.getItem("anlo_class")||"Form 2 Science";
+document.getElementById('login').style.display='none';
+document.getElementById('app').style.display='block';
+document.getElementById('welcome').innerText="Good morning, "+n+" 👋";
+document.getElementById('classShow').innerText=c;
+document.getElementById('ttTitle').innerText=c+" - Monday Timetable";
+let key=c.includes("Science")?"Science":c.includes("Business")?"Business":"General Arts";
+document.getElementById('ttBox').innerHTML=timetables[key];
+document.getElementById('asBox').innerHTML=assigns[key];
+}
+function logout(){localStorage.clear();location.reload()}
+function show(id,btn){
+['home','time','assign'].forEach(x=>document.getElementById(x).style.display='none');
+document.getElementById(id).style.display='block';
+document.querySelectorAll('.btn2').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+}
+openApp();
+</script>
+</body>
+</html>
